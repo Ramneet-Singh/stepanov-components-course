@@ -70,7 +70,7 @@ struct table_util {
     void print_headers(I headers, size_t col_count, size_t min_width) {
         cols = col_count;
         for (size_t i(0); i < cols; ++i, ++headers) {
-	    col_width.push_back(strlen(*headers) + (i ? padding : 0)); // no padding before the first column
+	    col_width.push_back(strlen( (*headers).c_str() ) + (i ? padding : 0)); // no padding before the first column
             col_width[i] = std::max(min_width, col_width[i]);
             std::cout << std::setw(col_width[i]) << *headers;
         }

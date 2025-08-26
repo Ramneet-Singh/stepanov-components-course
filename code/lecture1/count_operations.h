@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <random>
 
 #include "iota.h"
 #include "instrumented.h"
@@ -19,8 +20,10 @@ template <typename Function>
 void count_operations(size_t i, size_t j, Function fun, double (*norm)(double, double) = dont_normalize) { 
 // measure operations on an interval of a given length 
 // ranging from i to j and going through i, 2i, 4i, ... up to and including j
+  std::random_device rd;
+  std::mt19937 g(42);
 
-  size_t cols = instrumented<double>::number_ops;
+  constexpr size_t cols = instrumented<double>::number_ops;
  
   size_t decimals[cols];
   size_t normalized((norm == dont_normalize) ? 0 : 2);
@@ -28,18 +31,18 @@ void count_operations(size_t i, size_t j, Function fun, double (*norm)(double, d
   std::fill(decimals + 1, decimals + cols, normalized);
   
   table_util table;
-  table.print_headers(instrumented<double>::counter_names, instrumented<double>::number_ops, 12); 
+  table.print_headers(instrumented<double>::counter_names.begin(), instrumented<double>::number_ops, 12); 
  
   while (i <= j) {
    
     std::vector<instrumented<double> > vec(i);
     course::iota(vec.begin(), vec.end(), 0.0);	
-    std::random_shuffle(vec.begin(), vec.end());
+    std::shuffle(vec.begin(), vec.end(), g);
 
     instrumented<double>::initialize(i);
     fun(vec.begin(), vec.end());
     
-    double* count_p = instrumented<double>::counts;
+    double* count_p = instrumented<double>::counters.begin();
     
     for (size_t k(1); k < cols; ++k) count_p[k] = norm(count_p[k], count_p[0]);
 
