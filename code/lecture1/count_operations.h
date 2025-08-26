@@ -36,7 +36,7 @@ void count_operations(size_t i, size_t j, Function fun, double (*norm)(double, d
   while (i <= j) {
    
     std::vector<instrumented<double> > vec(i);
-    course::iota(vec.begin(), vec.end(), 0.0);	
+    std::iota(vec.begin(), vec.end(), 0.0);	
     std::shuffle(vec.begin(), vec.end(), g);
 
     instrumented<double>::initialize(i);
